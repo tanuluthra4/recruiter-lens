@@ -57,6 +57,7 @@ recruiter-lens/
 ├── submission_metadata.yaml
 ├── src/
 │   ├── jd_parser.py          # Extracts hard/soft/disqualifier requirements from JD
+│   ├── loader.py  
 │   ├── career_analyzer.py    # Title + career trajectory fit, consulting penalty
 │   ├── skill_matcher.py      # Endorsement-weighted skill relevance
 │   ├── signals.py            # Behavioral availability scoring
