@@ -1,0 +1,59 @@
+team_name: "Tanu Luthra"
+
+primary_contact:
+  name: "Tanu Luthra"
+  email: "tanuluthra1@gmail.com"
+  phone: "+91-7056606836"
+
+team_members:
+  - name: "Tanu Luthra"
+    email: "tanuluthra1@gmail.com"
+    role: "ML Engineer / Full-stack"
+
+github_repo: "https://github.com/tanuluthra4/recruiter-lens"
+
+sandbox_link: "https://huggingface.co/spaces/tanuluthra4/recruiter-lens"
+
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+
+compute:
+  platform: "Windows 11 Laptop"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.13.5"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
+
+ai_tools_used:
+  - "Claude"
+
+ai_usage_summary: |
+  Used Claude for architectural discussion and code review. All scoring logic,
+  weights, JD analysis, and engineering decisions were made by the developer.
+  No candidate data was fed to any LLM. The ranker itself uses no LLM calls —
+  it is a deterministic, rule-guided semantic scorer.
+
+methodology_summary: |
+  Rule-guided semantic ranker with five scoring dimensions: career/title fit
+  (35%), skill relevance with endorsement trust filter (25%), experience quality
+  (15%), location/logistics (10%), and a behavioral availability multiplier
+  derived from Redrob platform signals (±20% modifier on final score).
+
+  The decisive component is career/title fit — it explicitly penalises
+  non-technical career histories regardless of skill listings, catching
+  keyword-stuffers. The skill component uses BM25-style exact matching gated
+  through an endorsement-duration trust filter that halves weight for
+  unverified skill claims (0 endorsements + 0 months used). Honeypot profiles
+  are detected via data integrity checks (salary min > max, expert skills with
+  zero endorsements and zero duration, temporal impossibilities) and pushed to
+  rank last. Runtime: ~2–3 minutes on CPU for 100K candidates.
+
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
