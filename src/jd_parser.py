@@ -149,9 +149,12 @@ class JDRequirements:
 
 
 def load_requirements() -> JDRequirements:
-    """Fast path: loads from artifacts if available, else builds from scratch."""
-    if JD_REQUIREMENTS_PATH.exists():
-        return JDRequirements.load()
+    try:
+        if JD_REQUIREMENTS_PATH.exists() and JD_REQUIREMENTS_PATH.stat().st_size > 0:
+            return JDRequirements.load()
+    except Exception:
+        pass
+
     req = JDRequirements()
     req.save()
     return req
