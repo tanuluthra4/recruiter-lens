@@ -66,7 +66,6 @@ recruiter-lens/
 │   ├── honeypot_detector.py  # Flags impossible profiles
 │   └── rank_engine.py        # Combines all components → final score
 ├── artifacts/
-│   ├── jd_embedding.npy      # Precomputed sentence-transformer embedding of JD
 │   └── jd_requirements.json  # Structured requirements parsed from JD
 ├── data/
 │   └── sample_submission.csv # Format reference only
