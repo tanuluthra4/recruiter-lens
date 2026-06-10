@@ -5,9 +5,9 @@ rank.py
 CLI entrypoint for recruiter-lens.
 
 Usage:
-    python rank.py --candidates candidates.jsonl --out submission.csv
-    python rank.py --candidates candidates.jsonl.gz --out submission.csv
-    python rank.py --candidates sample_candidates.json --out submission.csv --top 100
+    python rank.py --candidates candidates.jsonl --out team_recruiter-lens.csv
+    python rank.py --candidates candidates.jsonl.gz --out team_recruiter-lens.csv
+    python rank.py --candidates sample_candidates.json --out team_recruiter-lens.csv --top 100
 
 Produces a CSV with columns: candidate_id, rank, score, reasoning
 Compatible with validate_submission.py from the hackathon bundle.
@@ -172,8 +172,8 @@ def main():
     )
     parser.add_argument(
         "--out", "-o",
-        default="submission.csv",
-        help="Output CSV path (default: submission.csv)"
+        default="team_recruiter-lens.csv",
+        help="Output CSV path (default: team_recruiter-lens.csv)"
     )
     parser.add_argument(
         "--top",

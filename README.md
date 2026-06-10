@@ -8,43 +8,40 @@ Recruiters don't miss the right person because the talent isn't there. They miss
 
 ## Architecture
 
-Five scoring dimensions, each independently computed and combined with learned weights:
+Five scoring dimensions, each independently computed and combined with explicit weights:
 
 | Dimension | Weight | What it measures |
 |---|---|---|
 | Career & Title Fit | 35% | Is this person actually an ML/AI engineer at a product company? |
-| Skill Relevance | 25% | Semantic + BM25 skill match with endorsement trust filter |
-| Experience Quality | 15% | Years, company type (product vs. consulting), trajectory |
-| Behavioral Availability | 15% | Recency, response rate, notice period, open-to-work |
+| Skill Relevance | 25% | BM25 skill match with endorsement-duration trust filter |
+| Experience Quality | 15% | Years, company type (product vs. consulting), tenure stability |
+| Behavioral Availability | multiplier ±20% | Recency, response rate, notice period, open-to-work |
 | Location & Logistics | 10% | India cities, relocation willingness, work mode |
 
 **Anti-trap logic** (per the JD's explicit warning):
-- Candidates with non-technical career histories (Marketing, HR, Accounting) are hard-capped regardless of skill listings
-- Skills with zero endorsements and zero usage months are treated as unverified
-- Honeypot profiles (impossible timelines, `expert` proficiency + 0 endorsements) are flagged and ranked last
-- Inactive candidates (last login >90 days + low response rate) receive a behavioral decay penalty
+- Candidates with non-technical career histories (Marketing, HR, Accounting) are hard-capped at 0.20 regardless of skill listings
+- Skills with zero endorsements AND zero usage months are treated as unverified (0.2× weight)
+- Honeypot profiles (salary min > max, expert proficiency + 0 endorsements/duration, temporal impossibilities) are flagged and pushed to rank last
+- Consulting-heavy careers (>80% at IT services firms) are hard-capped regardless of current title
 
-**Compute budget:** Runs on CPU in ~2–3 minutes for 100K candidates. No GPU. No external API calls during ranking. Uses `all-MiniLM-L6-v2` (80MB) for semantic matching — precomputed JD embedding stored in `artifacts/`.
+**Compute budget:** Runs on CPU in ~2 minutes for 100K candidates. No GPU. No external API calls during ranking.
 
 ---
 
 ## Reproduce
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 pip install -r requirements.txt
 
-# (One-time) Pre-compute the JD embedding
-python src/precompute.py --jd job_description.md --out artifacts/jd_embedding.npy
+# 2. Rank candidates (produces team_recruiter-lens CSV)
+python rank.py --candidates candidates.jsonl --out team_recruiter-lens.csv
 
-# Rank candidates
-python rank.py --candidates candidates.jsonl --out submission.csv
-
-# Validate format
-python validate_submission.py submission.csv
+# 4. Validate format
+python validate_submission.py team_recruiter-lens.csv
 ```
 
-Full end-to-end from `candidates.jsonl` to `submission.csv` runs in **≤5 minutes on CPU, 16GB RAM**.
+Full end-to-end from `candidates.jsonl` to `team_recruiter-lens.csv` runs in **≤5 minutes on CPU, 16GB RAM**.
 
 ---
 
@@ -52,23 +49,25 @@ Full end-to-end from `candidates.jsonl` to `submission.csv` runs in **≤5 minut
 
 ```
 recruiter-lens/
-├── rank.py                   # CLI entrypoint — produces submission.csv
+├── rank.py                    # CLI entrypoint — produces submission CSV
 ├── requirements.txt
 ├── submission_metadata.yaml
+├── validate_submission.py     # Provided by hackathon bundle
 ├── src/
-│   ├── jd_parser.py          # Extracts hard/soft/disqualifier requirements from JD
-│   ├── loader.py  
-│   ├── career_analyzer.py    # Title + career trajectory fit, consulting penalty
-│   ├── skill_matcher.py      # Endorsement-weighted skill relevance
-│   ├── signals.py            # Behavioral availability scoring
-│   ├── experience_scorer.py  # Experience years + company type quality
-│   ├── location_scorer.py    # Geography + notice period + relocation
-│   ├── honeypot_detector.py  # Flags impossible profiles
-│   └── rank_engine.py        # Combines all components → final score
+│   ├── __init__.py
+│   ├── jd_parser.py           # Structured JD requirements
+│   ├── loader.py              # JSONL / JSONL.GZ candidate loader
+│   ├── career_analyzer.py     # Title + career trajectory fit, consulting penalty
+│   ├── skill_matcher.py       # Endorsement-weighted skill relevance
+│   ├── signals.py             # Behavioral availability scoring (multiplier)
+│   ├── experience_scorer.py   # Experience years + company type quality
+│   ├── location_scorer.py     # Geography + notice period + relocation
+│   ├── honeypot_detector.py   # Flags impossible profiles
+│   └── rank_engine.py         # Combines all components → final score
 ├── artifacts/
-│   └── jd_requirements.json  # Structured requirements parsed from JD
+│   └── jd_requirements.json   # Pre-parsed JD requirements (auto-generated)
 ├── data/
-│   └── sample_submission.csv # Format reference only
+│   └── sample_submission.csv  # Format reference only
 └── tests/
     └── test_scoring.py
 ```
@@ -77,9 +76,9 @@ recruiter-lens/
 
 ## Methodology
 
-See `submission_metadata.yaml` for the ≤200-word summary submitted with the ranking.
+This is a **rule-guided semantic ranker**. The decisive component is career/title fit — it separates a genuine ML engineer from a keyword-stuffer. Skill scoring uses BM25-style exact matching gated through an endorsement-duration trust filter that halves the weight of unverified skill claims. Behavioral signals act as a multiplicative modifier, not an additive component — a technically strong candidate who is unreachable gets downweighted, not replaced.
 
-The short version: this is a **rule-guided semantic ranker**. The career/title component is the decisive signal — it's what separates a genuine ML engineer from a keyword-stuffer. Skill scoring uses BM25 for exact matches and sentence-transformer cosine similarity for semantic proximity, but both are gated through an endorsement-duration trust filter that halves the weight of unverified skill claims. Behavioral signals act as a multiplicative modifier, not an additive component — a technically strong candidate who is unreachable gets downweighted, not replaced.
+See `submission_metadata.yaml` for the full ≤200-word methodology summary.
 
 ---
 
