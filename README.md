@@ -50,6 +50,7 @@ Full end-to-end from `candidates.jsonl` to `team_recruiter-lens.csv` runs in **�
 ```
 recruiter-lens/
 ├── rank.py                    # CLI entrypoint — produces submission CSV
+├── app.py                    # Streamlit app for HuggingFace Space sandbox
 ├── requirements.txt
 ├── submission_metadata.yaml
 ├── validate_submission.py     # Provided by hackathon bundle
