@@ -22,12 +22,12 @@ from src.rank_engine import score_candidate
 
 # Fixtures
 
-_candidates = [
-    Path(__file__).parent.parent.parent / "mnt/user-data/uploads/sample_candidates.json",
-    Path(__file__).parent.parent / "sample_candidates.json",
-    Path("/mnt/user-data/uploads/sample_candidates.json"),
-]
-SAMPLE_PATH = next((p for p in _candidates if p.exists()), _candidates[0])
+ROOT = Path(__file__).resolve().parents[1]
+SAMPLE_PATH = ROOT / "data" / "sample_candidates.json"
+
+assert SAMPLE_PATH.exists(), (
+    f"Missing test fixture: {SAMPLE_PATH}"
+)
 
 
 def load_sample():
