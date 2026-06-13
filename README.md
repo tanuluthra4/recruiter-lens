@@ -68,6 +68,7 @@ recruiter-lens/
 ├── artifacts/
 │   └── jd_requirements.json   # Pre-parsed JD requirements (auto-generated)
 ├── data/
+│   ├── sample_candidates.json 
 │   └── sample_submission.csv  # Format reference only
 └── tests/
     └── test_scoring.py
