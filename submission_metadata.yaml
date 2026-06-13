@@ -1,4 +1,4 @@
-team_name: "Tanu Luthra"
+team_name: "Recruiter Lens"
 
 primary_contact:
   name: "Tanu Luthra"
@@ -14,13 +14,13 @@ github_repo: "https://github.com/tanuluthra4/recruiter-lens"
 
 sandbox_link: "https://huggingface.co/spaces/tanuluthra4/recruiter-lens"
 
-reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./team_recruiter-lens.csv"
 
 compute:
-  platform: "Windows 11 Laptop"
+  platform: "Local Windows 11 Machine"
   cpu_cores: 8
   ram_gb: 16
-  python_version: "3.13.5"
+  python_version: "3.11 (tested on HF deployment); developed locally on 3.13.5"
   os: "Windows 11"
   uses_gpu_for_inference: false
   has_network_during_ranking: false
@@ -31,25 +31,36 @@ ai_tools_used:
   - "Claude"
 
 ai_usage_summary: |
-  Used Claude for architectural discussion and code review. All scoring logic,
-  weights, JD analysis, and engineering decisions were made by the developer.
-  No candidate data was fed to any LLM. The ranker itself uses no LLM calls —
-  it is a deterministic, rule-guided semantic scorer.
+  Used Claude for architectural discussion, code review, debugging assistance,
+  and refactoring suggestions. All scoring logic, ranking heuristics, feature
+  engineering, weights, and evaluation decisions were independently designed and
+  implemented by the developer. No candidate data was shared with any external
+  LLM service. The ranker itself performs no LLM inference and is entirely
+  deterministic and offline.
 
 methodology_summary: |
-  Rule-guided semantic ranker with five scoring dimensions: career/title fit
-  (35%), skill relevance with endorsement trust filter (25%), experience quality
-  (15%), location/logistics (10%), and a behavioral availability multiplier
-  derived from Redrob platform signals (±20% modifier on final score).
+  Recruiter Lens is a deterministic recruiter-inspired ranking engine that
+  prioritises career trajectory over keyword matching.
 
-  The decisive component is career/title fit — it explicitly penalises
-  non-technical career histories regardless of skill listings, catching
-  keyword-stuffers. The skill component uses BM25-style exact matching gated
-  through an endorsement-duration trust filter that halves weight for
-  unverified skill claims (0 endorsements + 0 months used). Honeypot profiles
-  are detected via data integrity checks (salary min > max, expert skills with
-  zero endorsements and zero duration, temporal impossibilities) and pushed to
-  rank last. Runtime: ~2–3 minutes on CPU for 100K candidates.
+  Five scoring dimensions are combined:
+  - Career/title fit (35%)
+  - Skill relevance with endorsement trust filter (25%)
+  - Experience quality (15%)
+  - Location/logistics (10%)
+  - Behavioral availability multiplier (±20%)
+
+  The system explicitly penalises non-technical career histories regardless of
+  skill listings, preventing keyword-stuffing profiles from ranking highly.
+
+  Skill relevance uses BM25-style exact matching combined with an
+  endorsement-duration trust filter that discounts unverified skill claims.
+  Honeypot profiles are detected via integrity checks (salary inconsistencies,
+  impossible timelines, and expert skills with zero evidence) and are pushed to
+  the bottom of rankings.
+
+  The ranking pipeline is deterministic, CPU-only, reproducible, and requires
+  no network access or LLM inference. On an 8-core laptop, it processed
+  100,000 candidates end-to-end in 75.3 seconds.
 
 declarations:
   read_submission_spec: true
@@ -57,3 +68,10 @@ declarations:
   no_collusion: true
   honeypot_check_done: true
   reproduction_tested: true
+
+benchmark:
+  dataset_size: 100000
+  load_time_seconds: 13.9
+  scoring_time_seconds: 60.4
+  total_runtime_seconds: 75.3
+  honeypots_detected: 1470
