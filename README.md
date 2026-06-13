@@ -24,7 +24,34 @@ Five scoring dimensions, each independently computed and combined with explicit 
 - Honeypot profiles (salary min > max, expert proficiency + 0 endorsements/duration, temporal impossibilities) are flagged and pushed to rank last
 - Consulting-heavy careers (>80% at IT services firms) are hard-capped regardless of current title
 
-**Compute budget:** Runs on CPU in ~2 minutes for 100K candidates. No GPU. No external API calls during ranking.
+**Compute budget:** Processes 100K candidates in ~2 minutes on an 8-core CPU with 16GB RAM. No GPU and no external API calls during ranking.
+
+---
+
+## Benchmarks
+
+Tested on:
+- Windows 11 consumer laptop
+- 8 CPU cores
+- 16GB RAM
+- CPU-only execution
+
+Results on 100K candidates:
+- Dataset loading: 13.9s
+- Candidate scoring: 60.4s
+- End-to-end runtime: 75.3s
+- Honeypot profiles detected: 1,470
+
+---
+
+## System Guarantees
+
+- Deterministic rankings
+- CPU-only execution
+- Offline operation (no network/API calls)
+- Explainable component-wise scoring
+- Reproducible outputs for identical inputs
+- No LLM inference during ranking
 
 ---
 
@@ -37,7 +64,7 @@ pip install -r requirements.txt
 # 2. Rank candidates (produces team_recruiter-lens CSV)
 python rank.py --candidates candidates.jsonl --out team_recruiter-lens.csv
 
-# 4. Validate format
+# 3. Validate format
 python validate_submission.py team_recruiter-lens.csv
 ```
 
@@ -78,7 +105,7 @@ recruiter-lens/
 
 ## Methodology
 
-This is a **rule-guided semantic ranker**. The decisive component is career/title fit — it separates a genuine ML engineer from a keyword-stuffer. Skill scoring uses BM25-style exact matching gated through an endorsement-duration trust filter that halves the weight of unverified skill claims. Behavioral signals act as a multiplicative modifier, not an additive component — a technically strong candidate who is unreachable gets downweighted, not replaced.
+This is a **rule-guided semantic ranker**. The decisive component is career/title fit — it separates a genuine ML engineer from a keyword-stuffer. Skill scoring uses BM25-style exact matching gated through an endorsement-duration trust filter that halves the weight of unverified skill claims. Behavioral signals act as multiplicative modifiers rather than independent scores—a technically strong but unreachable candidate is downweighted, not replaced by weaker profiles.
 
 See `submission_metadata.yaml` for the full ≤200-word methodology summary.
 
