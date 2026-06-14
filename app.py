@@ -71,22 +71,35 @@ Ranks candidates the way a great recruiter would - by understanding **career tra
 # ── JD Summary sidebar 
 with st.sidebar:
     st.header("📋 Job Description")
+
+    st.markdown("**Role:** Senior AI Engineer (Founding Team)")
+    st.markdown("**Company:** Redrob AI (Series A talent intelligence platform)")
+    st.markdown("**Location:** Pune/Noida (Hybrid) · Open to relocation")
+
+    st.markdown("### Must-have skills")
     st.markdown("""
-**Role:** Senior AI Engineer (Founding Team)
-**Must-have skills:**
-- Embeddings, vector search, FAISS/Pinecone/Weaviate
-- Information retrieval, BM25, learning-to-rank
-- Python, NLP, ML (production systems)
-- Evaluation: NDCG, MRR, offline eval
-**Nice-to-have:**
-- LLM fine-tuning (LoRA, PEFT)
-- LangChain, sentence-transformers
-- MLOps, MLflow, Kubeflow
-**Disqualifiers:**
-- Non-technical current title (Marketing, HR, etc.)
-- Entire career at IT services / consulting
-- Keyword-stuffed profiles (0 endorsements, 0 months used)
-""")
+    - Embeddings-based retrieval (sentence-transformers, OpenAI, BGE, etc.)
+    - Vector databases (FAISS, Pinecone, Weaviate, Milvus, etc.)
+    - Python (production-quality code)
+    - Evaluation frameworks (NDCG, MRR, MAP, A/B testing)
+    """)
+
+    st.markdown("### Nice-to-have")
+    st.markdown("""
+    - LLM fine-tuning (LoRA, QLoRA, PEFT)
+    - Learning-to-rank models
+    - HR-tech / marketplace product exposure
+    - Distributed systems / inference optimization
+    """)
+
+    st.markdown("### Disqualifiers")
+    st.markdown("""
+    - Pure research-only background (no production deployments)
+    - Only LangChain demos / no pre-LLM ML experience
+    - No recent production coding (last 18+ months)
+    - Entire career in consulting firms (TCS, Infosys, Wipro, etc.)
+    - Primary expertise in CV/speech/robotics without NLP/IR
+    """)
 
     st.divider()
     st.header("⚖️ Scoring Weights")
